@@ -24,6 +24,7 @@ public final class H264Encoder {
         #endif
         case maxKeyFrameIntervalDuration
         case scalingMode
+        case automaticallyDropFrames
 
         public var keyPath: AnyKeyPath {
             switch self {
@@ -45,6 +46,8 @@ public final class H264Encoder {
                 return \H264Encoder.scalingMode
             case .profileLevel:
                 return \H264Encoder.profileLevel
+            case .automaticallyDropFrames:
+                return \H264Encoder.automaticallyDropFrames
             }
         }
     }
@@ -132,6 +135,7 @@ public final class H264Encoder {
             invalidateSession = true
         }
     }
+    var automaticallyDropFrames = false
     var locked: UInt32 = 0
     var lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.H264Encoder.lock")
     var expectedFPS: Float64 = AVMixer.defaultFPS {
@@ -252,7 +256,7 @@ public final class H264Encoder {
     }
 
     func encodeImageBuffer(_ imageBuffer: CVImageBuffer, presentationTimeStamp: CMTime, duration: CMTime) {
-        guard isRunning.value && locked == 0 else {
+        guard isRunning.value && (!automaticallyDropFrames || locked == 0) else {
             return
         }
         if invalidateSession {
