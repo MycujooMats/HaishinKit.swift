@@ -10,6 +10,9 @@ protocol RTMPMuxerDelegate: class {
 final class RTMPMuxer {
     static let aac: UInt8 = FLVAudioCodec.aac.rawValue << 4 | FLVSoundRate.kHz44.rawValue << 2 | FLVSoundSize.snd16bit.rawValue << 1 | FLVSoundType.stereo.rawValue
 
+    /// Custom property. Set to the difference between regular Date() time and NTP-synced clock time. A negative value means NTP is behind.
+    var ntpOffset: Int64 = 0
+
     weak var delegate: RTMPMuxerDelegate?
     private var configs: [Int: Data] = [:]
     private var audioTimeStamp = CMTime.zero
@@ -68,6 +71,7 @@ extension RTMPMuxer: VideoEncoderDelegate {
         } else {
             compositionTime = Int32((presentationTimeStamp.seconds - decodeTimeStamp.seconds) * 1000)
         }
+        let ntpTimestamp = (sampleBuffer.exifMillisecondsSince1970 ?? Date().millisecondsSince1970) + ntpOffset
         let delta: Double = (videoTimeStamp == CMTime.zero ? 0 : decodeTimeStamp.seconds - videoTimeStamp.seconds) * 1000
         guard let data = sampleBuffer.dataBuffer?.data, 0 <= delta else {
             return
@@ -75,6 +79,7 @@ extension RTMPMuxer: VideoEncoderDelegate {
         var buffer = Data([((keyframe ? FLVFrameType.key.rawValue : FLVFrameType.inter.rawValue) << 4) | FLVVideoCodec.avc.rawValue, FLVAVCPacketType.nal.rawValue])
         buffer.append(contentsOf: compositionTime.bigEndian.data[1..<4])
         buffer.append(data)
+        buffer.append(contentsOf: ntpTimestamp.bigEndian.data)
         delegate?.sampleOutput(video: buffer, withTimestamp: delta, muxer: self)
         videoTimeStamp = decodeTimeStamp
     }

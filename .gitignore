@@ -18,6 +18,7 @@ build/lf.build/Release-iphoneos/lf.build/dgph
 
 Cartfile.resolved
 Carthage/*
+.swiftpm/*
 
 Package.resolved
 HaishinKit.xcodeproj/project.xcworkspace/xcuserdata/shogo.xcuserdatad/WorkspaceSettings.xcsettings
