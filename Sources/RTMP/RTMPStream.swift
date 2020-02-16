@@ -341,6 +341,17 @@ open class RTMPStream: NetStream {
             }
         }
     }
+
+    /// Custom property. Set to the difference between regular Date() time and NTP-synced clock time. A negative value means NTP is behind.
+    open var ntpOffset: Int64 {
+        get {
+            return muxer.ntpOffset
+        }
+        set {
+            muxer.ntpOffset = newValue
+        }
+    }
+
     var audioTimestamp: Double = 0.0
     var videoTimestamp: Double = 0.0
     private(set) var muxer = RTMPMuxer()
