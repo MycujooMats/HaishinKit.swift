@@ -28,6 +28,7 @@ public class AVMixer {
 
         #if os(iOS)
         case preferredVideoStabilizationMode
+        case orientation
         #endif
 
         public var keyPath: AnyKeyPath {
@@ -43,6 +44,8 @@ public class AVMixer {
             #if os(iOS)
             case .preferredVideoStabilizationMode:
                 return \AVMixer.preferredVideoStabilizationMode
+            case .orientation:
+                return \AVMixer.orientation
             #endif
             }
         }
@@ -77,6 +80,11 @@ public class AVMixer {
     var continuousAutofocus: Bool {
         get { videoIO.continuousAutofocus }
         set { videoIO.continuousAutofocus = newValue }
+    }
+
+    var orientation: AVCaptureVideoOrientation {
+        get { videoIO.orientation }
+        set { videoIO.orientation = newValue }
     }
 
     var sessionPreset: AVCaptureSession.Preset = .default {

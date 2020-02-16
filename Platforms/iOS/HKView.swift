@@ -16,7 +16,9 @@ open class HKView: UIView {
 
     public var videoGravity: AVLayerVideoGravity = .resizeAspect {
         didSet {
-            layer.videoGravity = videoGravity
+            DispatchQueue.main.async {
+                self.layer.videoGravity = self.videoGravity
+            }
         }
     }
 
