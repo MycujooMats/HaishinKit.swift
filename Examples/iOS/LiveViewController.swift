@@ -57,8 +57,8 @@ final class LiveViewController: UIViewController {
             // .preferredVideoStabilizationMode: AVCaptureVideoStabilizationMode.auto
         ]
         rtmpStream.videoSettings = [
-            .width: 720,
-            .height: 1280
+            .width: 1280,
+            .height: 720
         ]
         rtmpStream.mixer.recorder.delegate = ExampleRecorderDelegate.shared
 
